@@ -246,6 +246,8 @@ void FilesystemConfiguration::reload()
         read_move_modifier(config["move_modifier"]);
     if (config["drag_and_drop"])
         read_drag_and_drop(config["drag_and_drop"]);
+    if (config["decorations_strategy"])
+        read_decorations_strategy(config["decorations_strategy"]);
 
     error_handler.on_complete();
 }
@@ -774,6 +776,25 @@ void FilesystemConfiguration::read_drag_and_drop(YAML::Node const& node)
     }
 }
 
+void FilesystemConfiguration::read_decorations_strategy(YAML::Node const& node)
+{
+    std::string str_name;
+    try_parse_value(node, str_name);
+    if (str_name == "always_ssd")
+        options.decorations_strategy = DecorationsStrategy::always_ssd;
+    else if (str_name == "always_csd")
+        options.decorations_strategy = DecorationsStrategy::always_csd;
+    else if (str_name == "prefer_ssd")
+        options.decorations_strategy = DecorationsStrategy::prefer_ssd;
+    else if (str_name == "prefer_csd")
+        options.decorations_strategy = DecorationsStrategy::prefer_csd;
+    else
+    {
+        builder << "Unknown decorations strategy: " << str_name;
+        add_error(node);
+    }
+}
+
 void FilesystemConfiguration::_watch(miral::MirRunner& runner)
 {
     if (no_config)
@@ -822,6 +843,11 @@ void FilesystemConfiguration::try_process_change()
 uint FilesystemConfiguration::get_primary_modifier() const
 {
     return options.primary_modifier;
+}
+
+DecorationsStrategy FilesystemConfiguration::decorations_strategy() const
+{
+    return options.decorations_strategy;
 }
 
 std::optional<uint> FilesystemConfiguration::try_parse_modifier(std::string const& stringified_action_key)

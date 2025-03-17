@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mir/server.h>
 #include <miral/append_event_filter.h>
 #include <miral/custom_renderer.h>
+#include <miral/decorations.h>
 #include <miral/display_configuration_option.h>
 #include <miral/external_client.h>
 #include <miral/keymap.h>
@@ -107,6 +108,7 @@ int main(int argc, char const* argv[])
             config_keymap,
             external_client_launcher,
             display_configuration_options,
+            to_decorations(config->decorations_strategy()),
             AppendEventFilter([&config](MirEvent const*)
     {
         config->try_process_change();

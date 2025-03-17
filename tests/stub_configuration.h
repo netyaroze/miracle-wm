@@ -139,6 +139,11 @@ namespace test
             return 0;
         }
 
+        [[nodiscard]] DecorationsStrategy decorations_strategy() const override
+        {
+            return DecorationsStrategy::always_csd;
+        }
+
     private:
         miracle::BorderConfig border_config;
         std::array<AnimationDefinition, static_cast<int>(AnimateableEvent::max)> animations;

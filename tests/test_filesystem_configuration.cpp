@@ -552,3 +552,33 @@ INSTANTIATE_TEST_SUITE_P(
         AnimationTypeParam("shrink", AnimationType::shrink),
         AnimationTypeParam("fade_in", AnimationType::fade_in),
         AnimationTypeParam("fade_out", AnimationType::fade_out)));
+
+struct DecorationsStrategyParam
+{
+    std::string value;
+    DecorationsStrategy expected;
+};
+
+class FilesystemConfigurationTestDecorationsStrategy : public FilesystemConfigurationTest, public ::testing::WithParamInterface<DecorationsStrategyParam>
+{
+};
+
+TEST_P(FilesystemConfigurationTestDecorationsStrategy, CanReadDecorationsStrategy)
+{
+    auto param = GetParam();
+    YAML::Node root;
+    root["decorations_strategy"] = param.value;
+    write_yaml_node(root);
+
+    FilesystemConfiguration config(runner, path, true);
+    EXPECT_EQ(config.decorations_strategy(), param.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FilesystemConfigurationTestDecorationsStrategy,
+    FilesystemConfigurationTestDecorationsStrategy,
+    ::testing::Values(
+        DecorationsStrategyParam("always_ssd", DecorationsStrategy::always_ssd),
+        DecorationsStrategyParam("always_csd", DecorationsStrategy::always_csd),
+        DecorationsStrategyParam("prefer_ssd", DecorationsStrategy::prefer_ssd),
+        DecorationsStrategyParam("prefer_csd", DecorationsStrategy::prefer_csd)));

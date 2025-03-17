@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "animation_defintion.h"
 #include "config_error_handler.h"
 #include "container.h"
+#include "decoratons_strategy.h"
 
 #include <atomic>
 #include <functional>
@@ -193,6 +194,7 @@ public:
     virtual void unregister_listener(int handle) = 0;
     virtual void try_process_change() = 0;
     [[nodiscard]] virtual uint get_primary_modifier() const = 0;
+    [[nodiscard]] virtual DecorationsStrategy decorations_strategy() const = 0;
     uint process_modifier(uint modifier) const;
 };
 
@@ -231,6 +233,7 @@ public:
     void unregister_listener(int handle) override;
     void try_process_change() override;
     [[nodiscard]] uint get_primary_modifier() const override;
+    [[nodiscard]] DecorationsStrategy decorations_strategy() const override;
 
 private:
     struct ConfigDetails
@@ -253,6 +256,7 @@ private:
         std::vector<WorkspaceConfig> workspace_configs;
         uint move_modifier = miracle_input_event_modifier_default;
         DragAndDropConfiguration drag_and_drop;
+        DecorationsStrategy decorations_strategy = DecorationsStrategy::always_csd;
     };
 
     struct ChangeListener
@@ -280,6 +284,7 @@ private:
     void read_enable_animations(YAML::Node const&);
     void read_move_modifier(YAML::Node const&);
     void read_drag_and_drop(YAML::Node const&);
+    void read_decorations_strategy(YAML::Node const&);
 
     static std::optional<uint> try_parse_modifier(std::string const& stringified_action_key);
 
